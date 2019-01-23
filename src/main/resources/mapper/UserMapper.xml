@@ -1,8 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.zl.mapper.UserMapper">
-	<select id="selectByUsernameAndPassword" resultType="User">
-		select * from  tuser where username = #{0} and password = #{1}
-		and deleteFlag = 1
+
+<mapper namespace="com.zl.mapper.UserCentersMapper">
+<!--  -->	
+	<resultMap type="UserCenters" id="UserCenter">
+		<id column="USER_ID" property="userId"/>
+		<result column="USER_STATUS_ID" property="userStatusId"/>
+		<result column="USER_LOGIN_NAME" property="userLoginName"/>
+		<result column="NET_NAME" property="netName"/>
+		<result column="USER_TEL" property="userTel"/>
+		<result column="USER_PWD" property="userPwd"/>
+		<result column="ACCOUNT_NUM" property="accountNum"/>
+		<result column="CAPITAL_PWD" property="capitalPwd"/>
+	</resultMap>
+
+<!--查询手机号  -->
+	<select id="selByPho" resultType="int" >
+		select count(1) from User_Centers where USER_TEL=#{phone}
 	</select>
-</mapper>	
+<!-- 注册 -->	
+	<insert id="addUserCenters" >
+		insert into User_Centers(USER_ID,USER_STATUS_ID,USER_TEL)
+		values(SQ_USER_ID.nextval,1,#{phone})
+	</insert>
+<!--查询用户名  -->
+	<select id="selByName"  resultMap="UserCenter">
+		select USER_ID,USER_STATUS_ID,USER_LOGIN_NAME,NET_NAME,
+			USER_TEL,USER_PWD,ACCOUNT_NUM,CAPITAL_PWD from User_Centers 
+		 	where USER_LOGIN_NAME=#{userLoginName}
+	</select>
+<!--插入用户名和密码  -->
+	<update id="upUserCenters">
+		update User_Centers set USER_LOGIN_NAME=#{userLoginName} ,
+				USER_PWD=#{userPwd}
+		where USER_TEL=#{userTel}
+	</update>
+<!--查询手机号/用户名和密码  -->
+	<select id="queryByNameAndPw" resultMap="UserCenter">
+		select USER_ID,USER_STATUS_ID,USER_LOGIN_NAME,NET_NAME,
+		USER_TEL,USER_PWD,ACCOUNT_NUM,CAPITAL_PWD from User_Centers 
+			where 
+			(USER_TEL=#{userLoginName} or USER_LOGIN_NAME=#{userLoginName}) and
+			USER_PWD=#{userPwd}
+	</select>
+
+<!--查询用户名或手机号是否存在  -->
+	<select id="selByNameOrPhone"  resultMap="UserCenter">
+		select USER_ID,USER_STATUS_ID,USER_LOGIN_NAME,NET_NAME,
+			USER_TEL,USER_PWD,ACCOUNT_NUM,CAPITAL_PWD from User_Centers 
+		 	where USER_LOGIN_NAME=#{userLoginName} or USER_TEL=#{userLoginName}
+	</select>
+<!-- 修改密码 -->
+	<update id="upPwd">
+		update User_Centers set USER_PWD=#{userPwd}
+		where USER_TEL=#{userTel} or ACCOUNT_NUM=#{accountNum}
+	</update>
+<!--根据资金账户,身份证号,姓名查找资金账号  -->
+	<select id="selfund"  resultType="String">
+		select ACCOUNT_NUM from User_Centers join User_Identification
+      		 on User_Centers.User_Id=User_Identification.User_Id 
+      		 where ACCOUNT_NUM=#{accountNum} and USER_NAME=#{userName}
+      		 and IDENTIFICATION_ID=#{identificationId}
+	</select>
+<!--根据手机号,身份证号,姓名查找资金账号   -->
+	<select id="findAccountNum"  resultType="String">
+		select ACCOUNT_NUM from User_Centers join User_Identification
+      		 on User_Centers.User_Id=User_Identification.User_Id 
+      		 where USER_TEL=#{userTel} and USER_NAME=#{userName}
+      		 and IDENTIFICATION_ID=#{identificationId}
+	</select>
+</mapper>

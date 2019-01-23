@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>资金账号验证</title>
+<link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+<script src="http://10.1.13.237:8080/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+	<script  type="text/javascript" >
+	//验证只能为数字 
+	function checkNumber(){ 
+		var accountNum=$("[name='accountNum']").val(); //手机号
+		var reg = /^[0-9]{2,11}$/; 
+		if(!reg.test(accountNum)){ 
+				$("#errAcc").text("账号只能是数字!");
+				return false; 
+			}else{
+		    	$("#errAcc").text("");
+		    	return true;
+		    }
+		} 
+	/* 验证姓名 */
+	function isChinese(){ 
+		var reg=/^[\u0391-\uFFE5]{1,8}$/;
+		var userName=$("[name='userName']").val();
+		if(!reg.test(userName)){ 
+				$("#errName").text("请输入中文!");
+				return false;
+			}else{
+				$("#errName").text("");
+				return true;
+			} 
+		}
+	/* 身份证账号 */
+		function isCardNo() {
+			// 身份证号码为15位或者18位，15位时全为数字，18位前17位为数字，最后一位是校验位，可能为数字或字符X 
+			var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+			var identificationId=$("[name='identificationId']").val();
+			if (!reg.test(identificationId)) {
+				$("#errSFZ").text("请输入正确的身份证号!");
+				return false;
+			}else{
+				$("#errSFZ").text("");
+				return true;
+			} 
+		}
+	
+	$(function () {
+		$("#fund").click(function(){
+			var accountNum=$("[name='accountNum']").val();
+			var userName=$("[name='userName']").val();
+			var identificationId=$("[name='identificationId']").val();
+			if(checkNumber()&&isChinese()&&isCardNo()){
+			 $.ajax({
+				type : 'post',
+				url : 'http://10.1.13.237:8080/fund.action',
+				data: "accountNum="+accountNum+"&userName="+userName+"&identificationId="+identificationId,
+				dataType : "json",
+				success : function(rs) {
+					if (rs.right=="No") {
+						location.href="http://10.1.13.237:8080/resetPwd.html?accountNum="+accountNum;
+					}else{			
+						$("#errhint").text(rs.error)
+					}
+				}
+			});
+			}	 
+		});
+	});
+	</script>
+		
+		
+		<style type="text/css">
+			.whole {
+				width: 1197px;
+				margin: auto;
+			}
+			
+			.head {
+				width: 50%;
+				height: 600px;
+				margin: auto;
+				margin-top: 30px;
+				margin-bottom: 20px;
+			}
+			
+			font {
+				margin-left: 20px;
+			}
+			
+			input {
+				border: none;
+				height: 30px;
+				width: 240px;
+			}
+			
+			.head-one {
+				padding-top: 10px;
+				margin-left: 10px;
+				width: 500px;
+				height: 50px;
+				margin-top: 30px;
+				border: 1px solid black;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="whole">
+			<div class="head">
+				<font>尊敬的客户:</font><br />
+				<font style="font-size: 14px;">如果你忘记了交易密码或资金密码,请如实填写一下信息!</font>
+				&nbsp;&nbsp;
+				<a href="http://10.1.13.237:8080/账号手机号验证.html">手机号/用户名验证</a>
+				<form action="" >
+					<div class="head-one">
+						<font>
+							资金账号&nbsp;&nbsp;&nbsp;
+							<input type="text" name="accountNum" onblur="checkNumber()" placeholder="请输入资金账号" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<a href="http://10.1.13.237:8080/忘记资金账号.html">忘记资金账号</a>
+						</font>
+						<font class="label label-danger" id="errhint"></font>
+					</div>
+					<font class="label label-danger" id="errAcc"></font>
+					<div class="head-one">
+						<font>
+							客户姓名&nbsp;&nbsp;&nbsp;
+							<input type="text" name="userName" onblur="isChinese()" placeholder="请输入客户姓名" />
+						</font>
+					</div>
+					<span class="label label-danger"  id="errName"></span>
+					<div class="head-one">
+						<font>
+							身份证号&nbsp;&nbsp;&nbsp;
+							<input type="text" name="identificationId" onblur="isCardNo()" placeholder="请输入身份证号" />
+						</font>
+					</div>
+					<span class="label label-danger"  id="errSFZ"></span>
+					<input type="button" value="下一步" id="fund" style="background-color: #FF8C00;color: white;
+						font-size: 18px; border-radius:8px;margin-top: 30px;width: 500px;height:50px;margin-left: 10px;" />
+				</form>
+			</div>
+		</div>
+	</body>
+
+</html>

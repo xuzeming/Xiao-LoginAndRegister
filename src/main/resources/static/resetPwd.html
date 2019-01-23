@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>重新设置密码</title>
+<link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+<script src="http://10.1.13.237:8080/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="http://10.1.13.237:8080/js/getUrlParam.js"></script>
+<script type="text/javascript">
+var phone=UrlParm.parm("phone");
+var fund=UrlParm.parm("accountNum");
+
+		/*密码验证*/    
+		function checkPwd(){
+		  var pwd=$("[name='userPwd']").val();
+		  var reg=/^[a-zA-Z0-9]{4,10}$/;    
+		    if(!reg.test(pwd)){
+		    	$("#errpwd").text("密码不能含有非法字符，长度在4-10之间");
+		   	return false;
+		      }
+		   		$("#errpwd").text("");
+		    return true;
+		    }
+		/* 确认密码 */
+		function checkRepwd(){
+			 var repwd=$("#repwd").val();
+			  var pwd=$("[name='userPwd']").val();
+			    if(pwd!=repwd){
+			    	$("#errrepwd").text("两次输入的密码不一致");
+			    return false;
+			      }
+					$("#errrepwd").text("");
+			      return true;
+			    }
+
+/*  */
+		$(function () {
+					if(fund!=null){
+						$("[name='accountNum']").val(fund);
+					}else{
+						$("[name='accountNum']").val("");
+					}
+					if(phone!=null){
+						$("[name='userTel']").val(phone);
+					}else{
+						$("[name='userTel']").val("");
+					}
+			$("#sub").click(function () {
+				var frm=new FormData(document.getElementById("frm"));
+				if(checkPwd()&&checkRepwd()){
+					$.ajax({
+						url:"http://10.1.13.237:8080/upPwd.action",
+						data:frm,
+						type:"post",
+						dataType:"json",
+			            processData:false,
+			            contentType:false,
+						success:function(rs){
+							location.href="http://10.1.13.237:8080/login.html"
+						}
+					});
+				}
+			})
+		})
+</script>		
+		
+		<style type="text/css">
+			.whole{
+				width: 80%;
+				height: 778px;
+				margin: auto;
+			}
+			.head{
+				width: 100%;
+				height: 50px;
+			}
+			.head-left{
+				width: 10px;
+				height: 10px;
+				background-color:red;
+				margin-left:150px;
+				margin-top: 20px;
+				float: left;
+			}
+			.head-right{
+				float: left;
+				margin-top: 10px;
+				font-size: 20px;
+				margin-left: 10px;
+			}
+			.tail{
+				width: 600px;
+				height: 600px;
+				margin: auto;
+				margin-top: 60px;
+			}
+			.tail-one{
+				width: 100%;
+				height:70px;
+				border: 1px solid whitesmoke;
+				margin-top: 40px;
+				font-size: 20px;
+				padding-top:20px ;
+			}
+			input{
+				height: 30px;
+				width: 350px;
+				font-size: 20px;
+				border: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="whole">
+			<div class="head">
+				<div class="head-left">
+				</div>
+				<div class="head-right">
+					重新设置密码
+				</div>
+			</div>
+			<hr  style="width:80%;margin: auto;"/>
+			<div class="tail">
+				<form id="frm">
+						<input type="hidden" name="accountNum" />	
+						<input type="hidden" name="userTel" />	
+					<div class="tail-one">
+							<font>新&nbsp;&nbsp;密&nbsp;&nbsp;码:&nbsp;&nbsp;&nbsp;</font>
+							<input type="password" name="userPwd" onblur="checkPwd()" placeholder="请输入新密码"/>	
+					</div>
+						<span class="label label-danger"  id="errpwd"></span>
+					<div class="tail-one">
+							<font>确认密码:&nbsp;&nbsp;&nbsp;</font>
+							<input type="password" id="repwd" onblur="checkRepwd()"  placeholder="请再次输入密码"/>	
+					</div>
+						<span class="label label-danger"  id="errrepwd"></span>
+					<input type="button" id="sub" value="提交" style="margin-top: 60px;margin-left:200px; width: 200px;
+						height: 50px;font-size: 20px;background-color: #FF8C00;color: white;border-radius:8px;"/>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>

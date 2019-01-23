@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+<link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+<script src="http://10.1.13.237:8080/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<title>资金账号找回</title>
+<script type="text/javascript" >
+		/* 验证姓名 */
+		function isChinese(){ 
+			var reg=/^[\u0391-\uFFE5]{1,8}$/;
+			var userName=$("[name='userName']").val();
+			if(!reg.test(userName)){ 
+					$("#errName").text("请输入中文!");
+					return false;
+				}else{
+					$("#errName").text("");
+					return true;
+				} 
+			}
+		/* 身份证账号 */
+			function isCardNo() {
+				// 身份证号码为15位或者18位，15位时全为数字，18位前17位为数字，最后一位是校验位，可能为数字或字符X 
+				var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+				var identificationId=$("[name='identificationId']").val();
+				if (!reg.test(identificationId)) {
+					$("#errSFZ").text("请输入正确的身份证号!");
+					return false;
+				}else{
+					$("#errSFZ").text("");
+					return true;
+				} 
+			}
+			/* 手机号验证 */
+			function  checkPhone(){
+			 		var phone=$("[name='userTel']").val(); //手机号
+			 		var reg=/^1[34578]\d{9}$/;
+				    if(!reg.test(phone)){ 
+				    	$("#errphone").text("请输入有效的手机号码，需是11位!");
+				        return false; 
+				    }else{
+				    	$("#errphone").text("");
+				    	return true;
+				    }
+			 	}
+		
+      $(function() {
+				$("#sub").click(function() {
+					var frm = new FormData(document.getElementById("frm"));
+				if(isChinese()&&isCardNo()&&checkPhone()){
+					$.ajax({
+							url : "http://10.1.13.237:8080/findAccountNum.action",
+							data : frm,
+							type : "post",
+							dataType : "json",
+							processData : false,
+							contentType : false,
+							success : function(rs) {
+								if (rs.right == "err") {
+									$("#errhint").text(rs.error)
+								} else {
+									alert("您的资金账号是:"+ rs.right)
+									location.href = "http://10.1.13.237:8080/资金账号验证.html"
+								}
+							}
+						})
+					}
+			  })
+			})
+</script>
+
+		
+		<style type="text/css">
+			*{
+				margin: 0px;
+				padding: 0px;
+			}
+			.whole{
+				width: 1197px;
+				height: 778px;
+				padding-top: 30px;
+				margin: auto;
+			}
+			.head{
+				width: 60%;
+				height: 600px;
+				margin: auto;
+				border: 1px solid silver;
+			}
+			form{
+				margin-left:100px;
+				padding: 15px;
+			}
+			.head-one{
+				width: 90%;
+				height: 50px;
+				margin-top: 60px;
+				padding-top: 15px;
+				border: 1px solid whitesmoke;
+			}
+			.head-one-left{
+				width: 5px;
+				height: 20px;
+				float: left;
+				background-color: #FF8C00;
+			}
+			.head-one-right{
+				height: 20px;
+				margin-left: 10px;
+				margin-top: 15px;
+				font-size: 18px;
+			}
+			font{
+				font-size: 18px;
+			}
+			input{
+				height: 30px;
+				width: 200px;
+				border: none;
+			}
+			.input{
+				margin-left: 120px;
+				margin-top: 40px;
+				background-color: #FF8C00;
+				height: 40px;
+				font-size: 20px;
+				color: white;
+				border-radius: 6px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="whole">
+			<div class="head">
+				<form id="frm">
+					<div  style="width: 90%;height:40px; ">
+						<div class="head-one-left">
+						</div>
+						<div class="head-one-right">
+							找回资金账号
+						</div>
+					</div>
+					<font class="label label-danger" id="errhint"></font>
+					<div class="head-one">
+						<font>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名 :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+							<input type="text" name="userName" onblur="isChinese()" placeholder="请输入您的姓名"/>
+						</font>
+					</div>
+					<span class="label label-danger"  id="errName"></span>
+					<div class="head-one">
+						<font>身份证号 :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<input type="text" name="identificationId" onblur="isCardNo()"  placeholder="请输入身份证号"/></font>
+					</div>
+					<span class="label label-danger"  id="errSFZ"></span>
+					<div class="head-one">
+						<font>手机号码:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<input type="text" name="userTel" onblur="checkPhone()" placeholder="请输入开户时绑定的手机号"/></font>
+					</div>
+					<span class="label label-danger"  id="errphone"></span><br />
+					<input type="button" value="下一步" id="sub" class="input"/>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>

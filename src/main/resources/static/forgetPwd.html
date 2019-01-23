@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>手机号账号验证</title>
+		<link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.8/vue.min.js"></script>
+		<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+		<script src="http://10.1.13.237:8080/js/60miao.js" type="text/javascript" charset="utf-8"></script>
+		<script src="http://10.1.13.237:8080/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<script  type="text/javascript" >
+		/* 用户名验证 */
+		function checkUser(){
+			  var user=$("[name='userLoginName']").val();
+			  var reg=/^[a-zA-Z0-9]{3,15}$/;    
+			    if(!reg.test(user)){
+			    	$("#errName").text("用户名错误,请输入3-15位的英文或数字!");
+			    return false;
+			      }
+			    	$("#errName").text("");
+			      return true;
+			    }
+		 	
+		 /* 验证码验证 */
+		function  checkCode() {
+		 		var code=$("[name='code']").val(); 
+		 		var reg=/^[0-9]{6}$/
+		 		if(!reg.test(code)){
+		 			$("#errhint").text("请输入有效验证码,6位数!");
+		 			return false;
+		 		}else{
+			    	$("#errhint").text("");
+			    	return true;
+			    }
+		 	}
+		
+		
+		function compare() {
+			var phone=$("[name='userTel']").val();
+			var code=$("[name='code']").val();
+			if(checkUser()&&checkCode()){
+			 $.ajax({
+				type : 'post',
+				url : 'http://10.1.13.237:8080/code/compareCode.action',
+				data: "phone="+phone+"&code="+code,
+				dataType : "json",
+				success : function(rs) {
+					if (rs.right=="No") {
+						location.href="http://10.1.13.237:8080/resetPwd.html?phone="+phone;
+					}else{			
+						$("#errhint").text(rs.error)
+					}
+				}
+			}); 
+			}
+		}
+		</script>
+		
+		
+		<style type="text/css">
+			.whole{
+				width: 700px;
+				height: 600px;
+				margin: auto;
+				margin-top: 30px;
+				padding-top: 20px;
+			}
+			.head{
+				width: 90%;
+				margin: auto;
+			}
+			.head-one{
+				width: 500px;
+				height: 50px;
+				margin-top:60px;
+				padding-top: 10px;
+				border: 1px solid darkgray;
+			}
+			input{
+				width: 290px;
+				height: 30px;
+				border: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="whole">
+			<div class="head" id="pwd">
+				<font>尊敬的客户:</font><br />
+				<font style="font-size: 14px;">如果你忘记了交易密码或资金密码,请如实填写一下信息!</font>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<a href="资金账号验证.html">通过资金账号验证</a>
+				<form action="" method="post">
+					<div class="head-one">
+						<font>
+							用户名:&nbsp;&nbsp;&nbsp;
+							<input type="text" name="userLoginName" @change="get()" onblur="checkUser()" placeholder="请输入用户名" /> 
+						</font>
+					</div>
+					<font class="label label-danger" id="errName"></font>
+					<font class="label label-danger">{{error}}</font>
+				<div class="head-one">
+					<font> 手机号:&nbsp;&nbsp;&nbsp; 
+						<input type="text" name="userTel" :value="phone" placeholder="请输入手机号" />
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+						<input type="button"  value="获取验证码" onclick="settime(this)"
+						style="background-color: #FF8C00; color: white; border-radius: 7px; width: 90px;" />
+					</font>
+				</div>
+				<font class="label label-danger" id="errphone"></font>
+				<div class="head-one">
+						<font>
+							验证码:&nbsp;&nbsp;&nbsp;
+							<input type="text" name="code" onblur="checkCode()" placeholder="请输入手机动态验证码" />
+						</font>
+						<font class="label label-danger" id="errhint"></font>
+					</div>
+					<input type="button" value="下一步" onclick="compare()"
+					 style="background-color: #FF8C00;color: white;margin-top: 50px;height:40px;border-radius:10px;
+					 font-size: 20px; margin-left: 100px;"/>
+				</form>
+			</div>
+		</div>
+	</body>
+<script type="text/javascript">
+	var va = new Vue({
+		el : '#pwd',
+		data : {
+			phone :"",
+			error:""
+		},
+		 methods:{ 
+			 get:function(){
+				var userLoginName=$("[name='userLoginName']").val();
+				this.$http.get('http://10.1.13.237:8080/selName.action',{params:{userLoginName:userLoginName}}
+					).then(function(res) {
+						if(res.bodyText=="该用户名不存在!"){
+							this.error=res.bodyText;
+						}else{
+							this.phone = res.bodyText;
+						}
+					},function() {
+						console.log('请求失败处理');
+					}
+				);
+			} ,	
+		 }
+	});
+</script>
+</html>

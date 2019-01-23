@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>注册</title>
+<link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+<script src="http://10.1.13.237:8080/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.8/vue.min.js"></script>
+<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+<script src="http://10.1.13.237:8080/js/getUrlParam.js"></script>
+</head>
+<style>
+	.row{
+		margin-top: 20px;
+	}
+	.code{
+		height: 35px;
+		background-color: #5BC0DE;
+		border-radius: 8px;
+	}
+</style>
+
+<script type="text/javascript" >
+var phone=UrlParm.parm("phone");
+		/* 用户名验证 */
+		function checkUser(){
+			  var user=$("[name='userLoginName']").val();
+			  var reg=/^[a-zA-Z][a-zA-Z0-9]{3,15}$/;    
+			    if(!reg.test(user)){
+			    	$("#errhint").text("用户名错误,请输入4-15位的英文或数字!");
+			    return false;
+			      }
+			    	$("#errhint").text("");
+			      return true;
+			    }
+		/*密码验证*/    
+		function checkPwd(){
+		  var pwd=$("[name='userPwd']").val();
+		  var reg=/^[a-zA-Z0-9]{4,10}$/;    
+		    if(!reg.test(pwd)){
+		    	$("#errpwd").text("密码不能含有非法字符，长度在4-10之间");
+		   	return false;
+		      }
+		   		$("#errpwd").text("");
+		    return true;
+		    }
+		/* 确认密码 */
+		function checkRepwd(){
+			 var repwd=$("#repwd").val();
+			  var pwd=$("[name='userPwd']").val();
+			    if(pwd!=repwd){
+			    	$("#errrepwd").text("两次输入的密码不一致");
+			    return false;
+			      }
+					$("#errrepwd").text("");
+			      return true;
+			    }
+		/* 协议 */
+		function checkb(){
+			if($('#checkA').prop("checked")){
+				$('#register').removeAttr("disabled");
+			}else{
+				$('#register').attr("disabled","disabled");
+			}
+		}
+/* 跳转 */
+$(function () {
+	$("#userTel").val(phone);
+	$("#register").click(function () {
+		var frm=new FormData(document.getElementById("frm"));
+		if(checkUser()&&checkPwd()&&checkRepwd()){
+				$.ajax({
+					url:"http://10.1.13.237:8080/user/registerN.action",
+					data:frm,
+					type:"post",
+					dataType:"json",
+		            processData:false,
+		            contentType:false,
+					success:function(rs){
+						 //后台传过来的数据
+						if (rs.right=="No") {
+							location.href="http://10.1.13.237:8080/login.html";
+						}else{	
+							$("#errhint").text(rs.error)													
+						}
+					}
+				});
+			}
+		})
+		
+
+})
+
+
+</script>
+
+
+<body>
+	<div class="container" id="data">
+		<div class="page-header">
+			<div class="row">
+				<div class="col-lg-2">
+					<img alt="logo" src="http://10.1.13.237:8080/img/logo.png" class="img-responsive">
+				</div>
+				<div class="col-lg-2">
+					<h5 class="text-success">欢迎注册</h5>
+				</div>
+			</div>
+		</div>	
+		<div class="page-body">
+			<form action="" class="form-horizontal" id="frm">
+				<div class="form-group">
+					<h3><span class="col-lg-4 col-lg-offset-4 text-center text-info">注册信息</span></h3>
+					<input type="hidden" name="userTel" id="userTel" />
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 sr-only">用户名</label>
+					<div class="col-lg-4 col-lg-offset-4">
+						<input type="text" name="userLoginName" onblur="checkUser()" class="form-control" placeholder="用户名">
+						<span class="label label-danger"  id="errhint"></span>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-lg-4 sr-only">登录密码</label>
+					<div class="col-lg-4 col-lg-offset-4">
+						<input type="password" name="userPwd" onblur="checkPwd()"  class="form-control" placeholder="登录密码">
+						<span class="label label-danger"  id="errpwd"></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 sr-only">确认登录密码</label>
+					<div class="col-lg-4 col-lg-offset-4">
+						<input type="password" id="repwd" onblur="checkRepwd()"  class="form-control" placeholder="确认登录密码">
+						<span class="label label-danger"  id="errrepwd"></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 sr-only">同意并接受</label>
+					<div class="col-lg-4 col-lg-offset-4">
+						<input type="checkbox" id="checkA" onclick="checkb()">
+						<span class="text-info">同意并接受</span>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="">&lt;&lt;晓组织用户协议&gt;&gt;</a>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-4 sr-only">注册</label>
+					<div class="col-lg-4 col-lg-offset-4">
+						<input type="button" id="register" disabled="disabled" value="注册" class="form-control btn btn-info">
+					</div>
+				</div>
+				<div class="form-group">
+					<span class="col-lg-4 col-lg-offset-4"><a href="login.html" class="text-info">已有账户登录</a></span>
+				</div>
+			</form>
+		</div>
+		<div class="page-bottom">
+			<div class="row">
+				<label class="col-lg-4 sr-only">尾部</label>
+				<div class="col-lg-8 col-lg-offset-2">
+					<p class="text-center">版权所有 @ 2019晓证券股份有限公司版权所有</p>
+					<p class="text-center">All Rights Reserved @ 2019 Xiao Securities Co., Ltd. All Rights Reserved</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

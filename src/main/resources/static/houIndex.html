@@ -1,0 +1,197 @@
+<html>
+	<head>
+		<title>后台主页面</title>
+		<meta charset="UTF-8" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.8/vue.min.js"></script>
+		<script src="https://cdn.staticfile.org/vue-resource/1.5.1/vue-resource.min.js"></script>
+		<!--引入图标样式-->
+		<link rel="stylesheet" type="text/css" href="http://10.1.13.237:8080/themes/icon.css" />		
+		<!--引入jQuery文件-->
+		<script src="http://10.1.13.237:8080/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<!--引入EasyUi的js文件-->
+		<script src="http://10.1.13.237:8080/js/jquery.easyui.min.js" type="text/javascript" charset="utf-8"></script>
+		<link rel="stylesheet" type="text/css" href="http://10.1.13.237:8080/bootstrap/css/bootstrap.css" />
+		<!--引入主题样式-->
+		<link rel="stylesheet" type="text/css" href="http://10.1.13.237:8080/themes/default/easyui.css" />
+		<link rel="stylesheet" type="text/css" href="css/管理员.css" />
+		
+		<style type="text/css">			
+					
+			#sdiv {
+				text-align: center;
+				font-size: 14px;
+				font-weight: bold;
+				line-height: 30px;
+				background-color: gray;
+			}
+			/*修改头部标题样式*/
+			
+			#n_title {
+				color: white;
+				font-size: 14px;
+				line-height: 40px;
+			}
+			/*修改标题超链接样式*/
+			
+			#n_title a {
+				text-decoration: none;
+				color: white;
+			}
+			
+			#n_title a:hover {
+				color: orange;
+			}
+	</style>
+		<!--声明js代码域-->
+		<script type="text/javascript">
+			/*网页js功能*/
+				/*网页js功能*/
+			$(function() {
+				//退出功能
+				$("#removeSession").click(function() {
+						//提示用户是否确定退出
+						$.messager.confirm("确认对话框", "你真的要退出吗？", function(r) {
+							//退出
+							if (r) {
+								window.location.href = "http://10.1.13.237:8080/user/remove.action";
+							}
+						})
+					})
+
+			//树状菜单和选项卡的联动
+				//给菜单添加单击事件
+				$("#treeMenu").tree({
+					onClick:function(node){
+						//控制台打印node内容
+							//console.log(node);
+						//获取attributes属性,判断是菜单还是菜单描述
+						var attrs=node.attributes;
+						if(attrs==null || attrs.url==null){
+							return;
+						}
+						var tab = $('#div_tabs').tabs('getSelected');
+						var index = $('#div_tabs').tabs('getTabIndex', tab);
+						$('#div_tabs').tabs('close', index);
+							7
+						//判断选项卡是否存在
+						var has=$("#div_tabs").tabs("exists",node.text);
+						if(has){
+							//选中存在的选项卡
+							$("#div_tabs").tabs("select",node.text);
+						}else{
+							//创建新的选项卡面板
+							$("#div_tabs").tabs("add",{
+								title:node.text,
+								closable:true,
+								content:"<iframe src="+attrs.url+" style='width:100%;height:98%' frameborder='0'/>"
+							})
+						}
+					}
+				})	
+			})
+
+		</script>
+	</head>
+
+	<body class="easyui-layout">
+		<!--布局：北-->
+		<div data-options="region:'north'" style="background-color:#3E4047 ;width:100%;background-image: url(img/1547710842.png);">
+			<!--添加网站Logo-->
+			<img src="img/1546694149(1).png"  style="width:200px;height:50px;margin:0;vertical-align:top;"/>
+			<span id="n_title" style="float: right; font-size:20px ">
+				欢迎<font class="text-danger">{{user.userLoginName}}</font>登录&nbsp;&nbsp;&nbsp;
+				<a id="removeSession" href="javascript:void(0)"><font class="text-info">退出</font></a>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<a id="" href="javascript:void(0)"><font class="text-danger">消息</font></a>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			</span>
+		</div>
+		<!--布局：西-->
+		<div data-options="region:'west',title:'晓组织证券',split:true" style="width: 200px;">
+			<!--分类效果实现-->
+			<div class="easyui-accordion" data-options="fit:true,border:false">
+				<div id="" title="" >
+					<!--创建菜单-->
+					<ul id="treeMenu" class="easyui-tree">
+						<li data-options="attributes:{url:'.html'}">首页</li>
+						<li>
+							<span title="">1用户模块</span>
+							<!--二级-->
+							<ul>
+								<li data-options="attributes:{url:'用户审核.html'}">用户审核</li>
+								<li data-options="attributes:{url:'用户详情.html'}">用户详情</li>
+							</ul>
+						</li>
+					
+						<li>
+							<span>1证券信息</span>
+							<ul>
+								<li data-options="attributes:{url:'chaKanGuPiao.html'}">股票详情</li>
+								<li data-options="attributes:{url:'zichan.html'}">资产明细</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				
+			</div>
+			
+		</div>
+		<!--布局：中间-->
+		<div data-options="region:'center'">
+			<!--选项卡使用-->
+			<div id="div_tabs" class="easyui-tabs" data-options="fit:true,border:false">				
+				<div title="首页" data-options="" >	
+			<!--首页-->	
+			
+			
+
+			<h1>后台管理</h1>
+			<div id="add" >
+				<div id="add1" align="center">
+				<img src="img/d0778e3021f0c7c78a5d1f9e5e38042.png" id="df"/>
+				</div>
+				<div id="anniu">
+				<input type="button" value="用户审核" id="a1"/><br />
+				</div>
+				<div id="anniu2">
+				<input type="button" value="用户详情" id="a2"/>
+				</div>
+			</div>
+			
+			<div id="aaa" align="center" >
+				<div class="whole">
+					<img src="img/689bcdb71954409384f0e3fea6cd2f6.png" />	
+				</div>
+				<div id="annu">
+					<input type="button" value="资产明细" /><br />
+					<input type="button" value="报表查询" style="margin-top: 60px;"/>
+				</div>
+				
+			</div>
+	
+				
+				
+					
+				</div>
+			</div>
+		</div>
+	</body>
+<script type="text/javascript">
+var va = new Vue({
+	el : '#n_title',
+	data : {
+		user :{},
+	},
+	mounted:function(){ 
+		this.$http.get('http://10.1.13.237:8080/user/getUser.action'
+				).then(function(res) {
+					this.user = res.data
+				},function() {
+					console.log('请求失败处理');
+				}
+				);
+		} ,	
+});
+
+</script>
+</html>

@@ -1,125 +1,180 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>登录页面</title>
-<script type="text/javascript"
-	src='http://localhost:8080/Xiao-LoginAndRegister/bootstrap/jquery.js'></script>
-<link href='http://localhost:8080/Xiao-LoginAndRegister/bootstrap/css/bootstrap.css'
-	rel="stylesheet" />
-<script type="text/javascript"
-	src='http://localhost:8080/Xiao-LoginAndRegister/bootstrap/js/bootstrap.js'></script>
-<script type="text/javascript"
-	src='http://localhost:8080/Xiao-LoginAndRegister/js/jquery.cookie.js'></script>
-<script type="text/javascript">
+<meta charset="UTF-8">
+<title>登录</title>
+<link href="https://www.glyphicons.com/">
+<link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css">
+<script src="http://10.1.13.237:8080/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<!--滑动验证-->
+<link rel="stylesheet" href="http://10.1.13.237:8080/slider/style.css">
+<script type="text/javascript" src="http://10.1.13.237:8080/slider/style.js"></script>
+<script type="text/javascript" src="http://10.1.13.237:8080/js/jquery.cookie.js"></script>
+<script type="text/javascript" >
+		/* 用户名验证 */
+		function checkUser(){
+			  var user=$("[name='userLoginName']").val();
+			  var reg=/^[a-zA-Z0-9]{3,15}$/;    
+			    if(!reg.test(user)){
+			    	$("#errhint").text("用户名错误,请输入3-15位的英文或数字!");
+			    return false;
+			      }
+			    	$("#errhint").text("");
+			      return true;
+			    }
+		/*密码验证*/    
+		function checkPwd(){
+		  var pwd=$("[name='userPwd']").val();
+		  var reg=/^[a-zA-Z0-9]{4,10}$/;    
+		    if(!reg.test(pwd)){
+		    	$("#errpwd").text("密码不能含有非法字符，长度在4-10之间");
+		   	return false;
+		      }
+		   		$("#errpwd").text("");
+		    return true;
+		    }   
 
-	$(function() {
-		/*页面加载完成看是否有勾选记住密码 */
-		 $("#username").val($.cookie("usernameCookie"));
-		$("#password").val($.cookie("passwordCookie")); 
-	    if ($.cookie("isremenberCookie")=="true") {
-	    	$("#isremenber").prop("checked", true);
-		}  
-		$("#loginBnt").click(function() {
-							var username = $("#username").val();
-							var password = $("#password").val();
-							//var isremenber = $("#isremenber").get(0).checked;
-							if ($.trim(username) == "") {
-								alert("用户名不为空...");
-								return;
-							}
-							if ($.trim(password) == "") {
-								alert("密码不为空...");
-								return;
-							}
-							$.ajax({
-									url : "http://localhost:8080/Xiao-LoginAndRegister/user/login.action",
-									data : "username=" + username
-												+ "&password=" + password,
-									type : "post",
-									dataType : "text",
-									success : function(rs) {
-									$("#errorMsg").text("");
-									if (rs == "success") {
-										if ($("#isremenber").is(":checked")) {
-											$.cookie('usernameCookie', username, { expires: 7, path: '/' });
-											$.cookie('passwordCookie', password, { expires: 7, path: '/' });
-											$.cookie('isremenberCookie',$("#isremenber").is(":checked"), { expires: 7, path: '/' });
-										}else{
-											/* $.removeCookie('usernameCookie',{ path: '/'}); */
-											$.removeCookie('passwordCookie',{ path: '/'});
-											$.removeCookie('isremenberCookie',{ path: '/'});
-										}
-										location.href = "http://www.baidu.com";
-									} else {
-										$("#errorMsg").text("用户名或者密码不正确");
-									}
-										}
-							})
+
+$(function () {
+	$("#login").click(function () {
+		var frm=new FormData(document.getElementById("frm"));
+		if(checkUser()&&checkPwd()){
+				$.ajax({
+					url:"http://10.1.13.237:8080/user/login.action",
+					data:frm,
+					type:"post",
+					dataType:"json",
+		            processData:false,
+		            contentType:false,
+					success:function(rs){
+						 //后台传过来的数据
+						if (rs.right=="No") {
+							location.href="http://10.1.13.237:8080/qianIndex.html";
+						}else{	
+							$("#errhint").text(rs.error)
+							$('#slideBar').show();
+							show();
+						}
+					}
 				})
-	})	
-	
-	
+		    }
+		})
+		
+	//将cookie赋值给相应的input
+			var uname=$.cookie('uname');
+			var password=$.cookie('paw'); 
+			$("[name='userLoginName']").val(uname)
+			$("[name='userPwd']").val(password)
+	})
 </script>
 <style type="text/css">
-	h3 {
-		text-align: center;
-		margin-bottom: 40px;
-		margin-top: 30px;
-	}
+.pull-left {
+	float: left !important;
+}
 
-	#loginBody {
-		width: 450px;
-		margin: 0px auto;
-	}
-	#logdiv{
-		text-align: center;
-	}
-	#all{
-		margin-top: 160px;
-	}
+#id1 {
+	position: relative;
+}
+
+#id2 {
+	position: absolute;
+	width: 292px;
+	height: 270px;
+	background-color: white;
+	margin-left: 700px;
+	margin-top: 50px;
+}
+#slideBar{
+	position:absolute;
+	top:10px;	
+	left:1px;
+	z-index:100;
+}
+
+form {
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 20px;
+}
 </style>
 </head>
 <body>
-	<div id="all">
-		<h3> &nbsp;学员管理系统登录</h3>
-		<div id="loginBody">
-			<form action="" method="post" class="form-horizontal" role="form">
-				<div class="form-group">
-					<label for="firstname" class="col-sm-2 control-label">用户名:</label>
-					<div class="col-sm-8">
-						<input type="text" class="form-control" id="username"
-							placeholder="请输入用户名" name="username" size="10">
-						
+	<div class="container">
+		<div class="page-header">
+			<div class="row">
+				<div class="col-lg-2">
+					<img alt="logo" src="http://10.1.13.237:8080/img/logo.png"
+						class="img-responsive">
+				</div>
+				<div class="col-lg-2">
+					<h5 class="text-success">欢迎到来登录页面</h5>
+				</div>
+			</div>
+		</div>
+		<div class="page-body">
+			<div class="">
+				<div id="id1" class="pull-left">
+					<img alt="" src="http://10.1.13.237:8080/img/login-backgroud.png">
+				</div>
+				<div id="id2" class="pull-left">
+				<div>
+						<div id="slideBar" ></div>
+					<form action=""  id="frm">						
+						<div class="form-group">
+							<label class="sr-only">注册</label> 
+							<a href="phoneRegister.html"><span class="glyphicon glyphicon-circle-arrow-right"></span>快速注册</a>
+						</div>
+						<span class="label label-danger"  id="errhint"></span>
+						<div class="form-group">
+							<label class="sr-only">用户名/手机号</label> 
+							<input type="text" class="form-control" onblur="checkUser()" name="userLoginName" placeholder="请输入用户名/手机号">
+						</div>
+						<div class="form-group">
+							<label class="sr-only">密码</label> 
+							<input type="password" class="form-control" onblur="checkPwd()" name="userPwd" placeholder="请输入密码">
+						<span class="label label-danger"  id="errpwd"></span>
+						</div>
+						<div class="checkbox">
+							<label><input type="checkbox" name="check"><span class="text-info">一星期免登陆</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<a href="forgetPwd.html">忘记密码?</a></label>
+						</div>
+						<div align="center">
+							<button type="button" id="login" class="btn btn-info">登 录</button>
+						</div>
+					</form>
 					</div>
-					<a  href="http://localhost:7777/employee/queryRegisterInfo.action" >免费注册</a>
 				</div>
-				<div class="form-group" >
-					<label for="inputPassword" class="col-sm-2 control-label">密&nbsp;&nbsp;&nbsp;&nbsp;码:</label>
-					<div class="col-sm-8">
-						<input type="password" class="form-control" id="password"
-							placeholder="请输入密码" size="10">
-						
-					</div>
-					<a class="reg">找回密码</a>
+			</div>
+		</div>
+		<div class="page-bottom">
+			<div class="row">
+				<label class="col-lg-4 sr-only">尾部</label>
+				<div class="col-lg-8 col-lg-offset-2">
+					<p class="text-center">版权所有 @ 2019晓证券股份有限公司版权所有</p>
+					<p class="text-center">All Rights Reserved @ 2019 Xiao
+						Securities Co., Ltd. All Rights Reserved</p>
 				</div>
-				
-				<div class="form-group" >
-				<div class="col-sm-offset-2 col-sm-8" id="logdiv">
-				<input type="checkbox"  id="isremenber" size="5">&nbsp;&nbsp;<font size="3px">记住密码</font>&nbsp;&nbsp;&nbsp;&nbsp;
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<input type="checkbox"  id="autoLog" size="5">&nbsp;&nbsp;<font size="3px">自动登录</font>
-				</div>
-				</div>
-				<span id="errorMsg" style="color: red"></span>
-				<div class="form-group" >
-					<div class="col-sm-offset-2 col-sm-8" id="logdiv">
-						<button type="button" class="btn btn-primary btn-block" id="loginBnt">登录</button>
-						<!-- <button type="button" class="btn btn-primary" id="registerBnt">注册</button> -->
-					</div>
-				</div>
-			</form>
+			</div>
 		</div>
 	</div>
 </body>
+	<script type="text/javascript">
+			$('#slideBar').hide();
+			function show(){
+				/*滑动验证*/
+				var dataList = ["0", "1"];
+				var options = {
+					dataList: dataList,
+					success: function() {
+						$('#id2').show();
+						$('#slideBar').hide();
+					},
+					fail: function() {
+
+					}
+				};
+				SliderBar("slideBar", options);
+			}
+		
+	</script>
 </html>
